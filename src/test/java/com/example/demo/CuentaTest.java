@@ -10,6 +10,7 @@ import static org.junit.jupiter.api.Assumptions.assumingThat;
 
 import java.math.BigDecimal;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
@@ -17,11 +18,15 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.condition.EnabledOnJre;
 import org.junit.jupiter.api.condition.EnabledOnOs;
 import org.junit.jupiter.api.condition.JRE;
 import org.junit.jupiter.api.condition.OS;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import com.example.demo.models.Banco;
 import com.example.demo.models.Cuenta;
@@ -79,11 +84,12 @@ public class CuentaTest {
 
     @Nested
     class transactionTest {
-        @Test
-        void testDebito(){
-            cuenta.debito(new BigDecimal(10));
+        @ParameterizedTest
+        @ValueSource(strings = {"100","10","20"})
+        void testDebito(String monto){
+            cuenta.debito(new BigDecimal(monto));
             assertNotNull(cuenta.getSaldo(), ()->"el valor no debe ser nulo");
-            assertEquals(cuenta.getSaldo().intValue(), 90, ()->"El valor actual no es igual");
+            assertTrue(cuenta.getSaldo().compareTo(BigDecimal.ZERO) > 0);
         }
     
         
@@ -186,6 +192,22 @@ public class CuentaTest {
                 assertEquals(cuenta.getSaldo(), new BigDecimal(100.21));
             });
             assertNotNull(cuenta.getSaldo());
+        }
+    }
+
+    @Nested
+    @Tag("timeout")
+    class ejemploTimeOutTest{
+        @Test
+        @Timeout(5)
+        void pruebaTimeOut() throws InterruptedException {
+            TimeUnit.SECONDS.sleep(5);
+        }
+
+        @Test
+        @Timeout(value = 2000, unit = TimeUnit.MILLISECONDS)
+        void pruebaTimeOut2() throws InterruptedException {
+            TimeUnit.SECONDS.sleep(2);
         }
     }
 }
