@@ -5,8 +5,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
+import static org.junit.jupiter.api.Assumptions.assumingThat;
 
 import java.math.BigDecimal;
+import java.util.Map;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
@@ -14,7 +17,10 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.condition.EnabledOnJre;
+import org.junit.jupiter.api.condition.EnabledOnOs;
+import org.junit.jupiter.api.condition.JRE;
+import org.junit.jupiter.api.condition.OS;
 
 import com.example.demo.models.Banco;
 import com.example.demo.models.Cuenta;
@@ -127,6 +133,42 @@ public class CuentaTest {
                 .get().getPersona()),
             () -> assertTrue(banco.getCuentas().stream().anyMatch(c -> c.getPersona().equals("Juan")))    
         );
+    }
+
+    @Test
+    @EnabledOnOs(OS.WINDOWS)
+    void testWindows(){}
+
+    @Test
+    @EnabledOnOs({OS.MAC, OS.LINUX})
+    void testOnMacAndLinux(){}
+
+    @Test
+    @EnabledOnJre(JRE.JAVA_17)
+    void justJDK17(){}
+
+    @Test
+    void printVariablesEnv(){
+        Map<String, String> getEnv = System.getenv();
+        getEnv.forEach((k, v) -> System.out.println(k + " = " + v));
+    }
+
+    @Test
+    void testSaldoCuentaDev(){
+        boolean esDev = "dev".equals(System.getProperty("ENV"));
+        assumeTrue(esDev);
+        assertNotNull(cuenta.getSaldo());
+        assertEquals(cuenta.getSaldo(), new BigDecimal(100.21));
+    }
+
+    @Test
+    void testSaldoCuentaDevAssuming(){
+        boolean esDev = "dev".equals(System.getProperty("ENV"));
+        assumingThat(esDev, ()-> {
+            assertTrue(cuenta.getSaldo().compareTo(BigDecimal.ZERO)> 0);
+            assertEquals(cuenta.getSaldo(), new BigDecimal(100.21));
+        });
+        assertNotNull(cuenta.getSaldo());
     }
 }
 
