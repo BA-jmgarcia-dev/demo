@@ -13,6 +13,7 @@ import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -38,6 +39,7 @@ import com.example.demo.repo.ExamenRepo;
 import com.example.demo.repo.ExamenRepoImpl;
 import com.example.demo.repo.PreguntasRepo;
 import com.example.demo.repo.PreguntasRepoImpl;
+import com.example.demo.services.ExamenService;
 import com.example.demo.services.ExamenServiceImpl;
 
 @ExtendWith(MockitoExtension.class)
@@ -248,6 +250,21 @@ public class ExamenServiceTest {
         assertEquals(1L, examen.getId());
         assertEquals("math", examen.getNombre());
     }
+
+    @Test
+    void spyTest(){
+        ExamenRepo examenRepo = spy(ExamenRepoImpl.class);
+        PreguntasRepo preguntaRepo = spy(PreguntasRepoImpl.class);
+        ExamenService examenService = new ExamenServiceImpl(examenRepo, preguntaRepo);
+
+        Examen examen = examenService.findExamenPorNombrePreguntas("math");
+        assertEquals(1L, examen.getId());
+        assertEquals(5, examen.getPreguntas().size());
+    
+        verify(examenRepo).findAll();
+        verify(preguntaRepo).findPreguntaExamenId(anyLong());
+    }
+
 
 }
 
