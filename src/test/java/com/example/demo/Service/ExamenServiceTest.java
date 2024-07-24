@@ -11,6 +11,7 @@ import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -34,17 +35,19 @@ import org.mockito.stubbing.Answer;
 import com.example.demo.Datos;
 import com.example.demo.models.Examen;
 import com.example.demo.repo.ExamenRepo;
+import com.example.demo.repo.ExamenRepoImpl;
 import com.example.demo.repo.PreguntasRepo;
+import com.example.demo.repo.PreguntasRepoImpl;
 import com.example.demo.services.ExamenServiceImpl;
 
 @ExtendWith(MockitoExtension.class)
 public class ExamenServiceTest {
 
     @Mock
-    ExamenRepo examenRepo;
+    ExamenRepoImpl examenRepo;
     
     @Mock
-    PreguntasRepo preguntasRepo;
+    PreguntasRepoImpl preguntasRepo;
     
     @InjectMocks
     ExamenServiceImpl service;
@@ -235,6 +238,15 @@ public class ExamenServiceTest {
 
         verify(examenRepo).guardar(any(Examen.class));
         verify(preguntasRepo).guardarPreguntas(anyList());
+    }
+
+    @Test
+    void doCallRealMethodTest(){
+        when(examenRepo.findAll()).thenReturn(Datos.EXAMENES);
+        doCallRealMethod().when(preguntasRepo).findPreguntaExamenId(anyLong());
+        Examen examen = service.findExamenPorNombrePreguntas("math");
+        assertEquals(1L, examen.getId());
+        assertEquals("math", examen.getNombre());
     }
 
 }
