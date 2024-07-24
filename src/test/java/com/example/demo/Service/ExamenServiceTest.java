@@ -1,5 +1,6 @@
 package com.example.demo.Service;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -9,6 +10,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -178,6 +181,60 @@ public class ExamenServiceTest {
         verify(preguntasRepo).findPreguntaExamenId(captor.capture());
 
         assertEquals(1L, captor.getValue());
+    }
+
+    @Test
+    void doThrowTest(){
+        Examen examen = Datos.EXAMEN;
+        examen.setPreguntas(Datos.PREGUNTAS);
+
+        doThrow(IllegalArgumentException.class).when(preguntasRepo).guardarPreguntas(anyList());
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            service.guardar(examen);
+        });
+    }
+
+    @Test
+    void testDoAsnwer(){
+        when(examenRepo.findAll()).thenReturn(Datos.EXAMENES);
+
+        doAnswer(invocation -> {
+          Long id = invocation.getArgument(0);
+          return id == 1L ? Datos.PREGUNTAS : Collections.emptyList(); 
+        }).when(preguntasRepo).findPreguntaExamenId(anyLong());
+
+        Examen examen = service.findExamenPorNombrePreguntas("math");
+        assertEquals(1L, examen.getId());
+        assertEquals(5, examen.getPreguntas().size());
+        assertTrue(examen.getPreguntas().contains("integrales"));
+    }
+
+    @Test
+    void guardarExamenTestDoAsnwer(){
+        // given 
+        Examen newExamen = Datos.EXAMEN;
+        newExamen.setPreguntas(Datos.PREGUNTAS);
+        doAnswer(new Answer<Examen>() {
+            Long secuencia = 8L;
+            @Override
+            public Examen answer(InvocationOnMock invocation) throws Throwable {
+                Examen examen = invocation.getArgument(0);
+                examen.setId(secuencia++);
+                return examen;
+            }
+        }).when(examenRepo).guardar(any(Examen.class));
+
+        // when
+        Examen examen = service.guardar(newExamen);
+
+        // then
+        assertNotNull(examen.getId());
+        assertEquals(8L, examen.getId());
+        assertEquals("Fisica", examen.getNombre());
+
+        verify(examenRepo).guardar(any(Examen.class));
+        verify(preguntasRepo).guardarPreguntas(anyList());
     }
 
 }
