@@ -19,6 +19,9 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatcher;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
@@ -42,6 +45,9 @@ public class ExamenServiceTest {
     
     @InjectMocks
     ExamenServiceImpl service;
+
+    @Captor
+    ArgumentCaptor<Long> captor;
 
     @Test
     void findExamenByName(){
@@ -136,9 +142,42 @@ public class ExamenServiceTest {
         service.findExamenPorNombrePreguntas("math");
 
         verify(examenRepo).findAll();
-        verify(preguntasRepo).findPreguntaExamenId(argThat(arg -> arg != null && arg.equals(1L)));
+        verify(preguntasRepo).findPreguntaExamenId(argThat(x -> x != null && x.equals(1L)));
+    }
 
+    @Test
+    void testArgumentsMatchersPersonalizado(){
+        when(examenRepo.findAll()).thenReturn(Datos.EXAMENES);
+        when(preguntasRepo.findPreguntaExamenId(anyLong())).thenReturn(Datos.PREGUNTAS);
+        service.findExamenPorNombrePreguntas("math");
 
+        verify(examenRepo).findAll();
+        verify(preguntasRepo).findPreguntaExamenId(argThat(new MisMatchers()));
+    }
+
+    public static class MisMatchers implements ArgumentMatcher<Long> {        
+        private Long argument;
+
+        @Override
+        public boolean matches(Long argument){
+            this.argument = argument;
+            return argument != null && argument > 0;
+        }
+
+        @Override
+        public String toString(){
+            return "mensaje de error personalizado " + argument + " debe ser un entero positivo";
+        }
+    }
+
+    @Test
+    void argumentCaptorTest(){
+        when(examenRepo.findAll()).thenReturn(Datos.EXAMENES);
+        service.findExamenPorNombrePreguntas("math");
+        
+        verify(preguntasRepo).findPreguntaExamenId(captor.capture());
+
+        assertEquals(1L, captor.getValue());
     }
 
 }
