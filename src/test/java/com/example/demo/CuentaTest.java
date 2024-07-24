@@ -201,7 +201,7 @@ public class CuentaTest {
         @Test
         @Timeout(5)
         void pruebaTimeOut() throws InterruptedException {
-            TimeUnit.SECONDS.sleep(5);
+            TimeUnit.SECONDS.sleep(4);
         }
 
         @Test

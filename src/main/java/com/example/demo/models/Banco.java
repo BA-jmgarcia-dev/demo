@@ -5,14 +5,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor
 @Data
 public class Banco {
     
+    private Long id;
     private String nombre;
     private List<Cuenta> cuentas;
+    private int totalTransferencias;
 
-    public Banco(){
+    public Banco(Long id, String nombre, int totalTransferencias){
+        this.id = id;
+        this.nombre = nombre;
+        this.totalTransferencias = totalTransferencias;
         this.cuentas = new ArrayList<>();
     }
 

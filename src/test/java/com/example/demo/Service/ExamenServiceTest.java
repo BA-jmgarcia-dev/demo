@@ -33,12 +33,12 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.stubbing.Answer;
 
-import com.example.demo.Datos;
 import com.example.demo.models.Examen;
 import com.example.demo.repo.ExamenRepo;
 import com.example.demo.repo.ExamenRepoImpl;
 import com.example.demo.repo.PreguntasRepo;
 import com.example.demo.repo.PreguntasRepoImpl;
+import com.example.demo.services.Datos;
 import com.example.demo.services.ExamenService;
 import com.example.demo.services.ExamenServiceImpl;
 
