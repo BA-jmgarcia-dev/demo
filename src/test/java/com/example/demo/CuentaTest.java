@@ -130,21 +130,12 @@ public class CuentaTest {
             Cuenta cuentaDestino = new Cuenta("Roberto", new BigDecimal(2000));
     
             Banco banco = new Banco();
-            banco.addCuenta(cuentaDestino);
-            banco.addCuenta(cuentaOrigen);
             banco.setNombre("Atlantida");
             banco.transferencia(cuentaOrigen, cuentaDestino, new BigDecimal(100));
     
             assertAll(
                 () -> assertEquals(cuentaOrigen.getSaldo().toPlainString(), "900"),
-                () -> assertEquals(cuentaDestino.getSaldo().toPlainString(), "2100"),
-                () -> assertEquals(2, banco.getCuentas().size()),
-                () -> assertEquals(cuentaDestino.getBanco().getNombre(), "Atlantida"),
-                () -> assertEquals(cuentaDestino.getPersona(), banco.getCuentas().stream()
-                    .filter(c -> c.getPersona().equals("Roberto"))
-                    .findFirst()
-                    .get().getPersona()),
-                () -> assertTrue(banco.getCuentas().stream().anyMatch(c -> c.getPersona().equals("Juan")))    
+                () -> assertEquals(cuentaDestino.getSaldo().toPlainString(), "2100")   
             );
         }
     }

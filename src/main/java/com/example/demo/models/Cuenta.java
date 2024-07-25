@@ -4,15 +4,25 @@ import java.math.BigDecimal;
 
 import com.example.demo.exceptions.DineroInsuficienteException;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.Data;
 
+
 @Data
+@Entity
+@Table(name = "cuenta")
 public class Cuenta {
-    
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
     private String persona;
     private BigDecimal saldo;
-    private Banco banco;
-
+  
     public Cuenta(String persona, BigDecimal saldo){
         this.persona = persona;
         this.saldo = saldo;

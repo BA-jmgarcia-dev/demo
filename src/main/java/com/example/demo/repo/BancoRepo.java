@@ -1,12 +1,10 @@
 package com.example.demo.repo;
 
-import java.util.List;
+
+import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.example.demo.models.Banco;
 
-public interface BancoRepo {
-    
-    List<Banco> findAll();
-    Banco findById(Long id);
-    void update(Banco Banco);
+public interface BancoRepo extends JpaRepository<Banco, Integer> { 
+
 }

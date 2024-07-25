@@ -24,7 +24,10 @@ import com.example.demo.models.Cuenta;
 import com.example.demo.repo.BancoRepo;
 import com.example.demo.repo.CuentaRepo;
 import com.example.demo.services.CuentaService;
-import com.example.demo.services.Datos;
+import static com.example.demo.services.Datos.BANCO;
+import static com.example.demo.services.Datos.CUENTA_001;
+import static com.example.demo.services.Datos.CUENTA_002;
+
 
 
 @SpringBootTest
@@ -41,77 +44,77 @@ public class CuentaServiceTest {
 
     @Test
     void contextLoads(){
-        when(cuentaRepo.findById(1L)).thenReturn(Datos.CUENTA_001);
-        when(cuentaRepo.findById(2L)).thenReturn(Datos.CUENTA_002);
-        when(bancoRepo.findById(1L)).thenReturn(Datos.BANCO);
+        when(cuentaRepo.findById(1)).thenReturn(CUENTA_001());
+        when(cuentaRepo.findById(2)).thenReturn(CUENTA_002());
+        when(bancoRepo.findById(1)).thenReturn(BANCO());
 
-        BigDecimal saldoOrigen = cuentaService.revisarSaldo(1L);
-        BigDecimal saldoDestino = cuentaService.revisarSaldo(2L);
+        BigDecimal saldoOrigen = cuentaService.revisarSaldo(1);
+        BigDecimal saldoDestino = cuentaService.revisarSaldo(2);
 
         assertEquals("200", saldoOrigen.toPlainString());
         assertEquals("300", saldoDestino.toPlainString());
 
-        cuentaService.transferir(1L, 1L, 2L, new BigDecimal("100"));
-        saldoOrigen = cuentaService.revisarSaldo(1L);
-        saldoDestino = cuentaService.revisarSaldo(2L);
+        cuentaService.transferir(1, 1, 2, new BigDecimal("100"));
+        saldoOrigen = cuentaService.revisarSaldo(1);
+        saldoDestino = cuentaService.revisarSaldo(2);
 
         assertEquals("100", saldoOrigen.toPlainString());
         assertEquals("400", saldoDestino.toPlainString());
 
-        int totalTransferencias = cuentaService.revisarTotalTransferencia(1L);
+        int totalTransferencias = cuentaService.revisarTotalTransferencia(1);
         assertEquals(1, totalTransferencias);
     
-        verify(cuentaRepo, times(3)).findById(1L);
-        verify(cuentaRepo, times(3)).findById(2L);
-        verify(cuentaRepo, times(2)).update(any(Cuenta.class));
+        verify(cuentaRepo, times(3)).findById(1);
+        verify(cuentaRepo, times(3)).findById(2);
+        verify(cuentaRepo, times(2)).save(any(Cuenta.class));
 
-        verify(bancoRepo, times(2)).findById(1L);
-        verify(bancoRepo).update(any(Banco.class));
+        verify(bancoRepo, times(2)).findById(1);
+        verify(bancoRepo).save(any(Banco.class));
     }
     
 
     @Test
     void contextLoads2(){
-        when(cuentaRepo.findById(1L)).thenReturn(Datos.CUENTA_001);
-        when(cuentaRepo.findById(2L)).thenReturn(Datos.CUENTA_002);
-        when(bancoRepo.findById(1L)).thenReturn(Datos.BANCO);
+        when(cuentaRepo.findById(1)).thenReturn(CUENTA_001());
+        when(cuentaRepo.findById(2)).thenReturn(CUENTA_002());
+        when(bancoRepo.findById(1)).thenReturn(BANCO());
 
-        BigDecimal saldoOrigen = cuentaService.revisarSaldo(1L);
-        BigDecimal saldoDestino = cuentaService.revisarSaldo(2L);
+        BigDecimal saldoOrigen = cuentaService.revisarSaldo(1);
+        BigDecimal saldoDestino = cuentaService.revisarSaldo(2);
 
         assertEquals("200", saldoOrigen.toPlainString());
         assertEquals("300", saldoDestino.toPlainString());
 
         assertThrows(DineroInsuficienteException.class, ()-> {
-            cuentaService.transferir(1L, 1L, 2L, new BigDecimal("1000"));
+            cuentaService.transferir(1, 1, 2, new BigDecimal("1000"));
         });
 
-        saldoOrigen = cuentaService.revisarSaldo(1L);
-        saldoDestino = cuentaService.revisarSaldo(2L);
+        saldoOrigen = cuentaService.revisarSaldo(1);
+        saldoDestino = cuentaService.revisarSaldo(2);
 
         assertEquals("200", saldoOrigen.toPlainString());
         assertEquals("300", saldoDestino.toPlainString());
 
-        int totalTransferencias = cuentaService.revisarTotalTransferencia(1L);
+        int totalTransferencias = cuentaService.revisarTotalTransferencia(1);
         assertEquals(0, totalTransferencias);
     
-        verify(cuentaRepo, times(3)).findById(1L);
-        verify(cuentaRepo, times(2)).findById(2L);
-        verify(cuentaRepo, never()).update(any(Cuenta.class));
+        verify(cuentaRepo, times(3)).findById(1);
+        verify(cuentaRepo, times(2)).findById(2);
+        verify(cuentaRepo, never()).save(any(Cuenta.class));
 
-        verify(bancoRepo, times(1)).findById(1L);
-        verify(bancoRepo, never()).update(any(Banco.class));
+        verify(bancoRepo, times(1)).findById(1);
+        verify(bancoRepo, never()).save(any(Banco.class));
 
-        verify(cuentaRepo, times(5)).findById(anyLong());
+        verify(cuentaRepo, times(5)).findById(any());
         verify(cuentaRepo, never()).findAll();
     }
 
     @Test
     void contextLoad(){
-        when(cuentaRepo.findById(1L)).thenReturn(Datos.CUENTA_001);
+        when(cuentaRepo.findById(1)).thenReturn(CUENTA_001());
 
-        Cuenta cuenta1 = cuentaRepo.findById(1L);
-        Cuenta cuenta2 = cuentaRepo.findById(1L);
+        Cuenta cuenta1 = cuentaRepo.findById(1).orElseThrow();
+        Cuenta cuenta2 = cuentaRepo.findById(1).orElseThrow();
 
         assertSame(cuenta1, cuenta2);
         assertTrue(cuenta1 == cuenta2);

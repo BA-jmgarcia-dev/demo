@@ -6,11 +6,11 @@ import com.example.demo.models.Cuenta;
 
 public interface CuentaService {
     
-    Cuenta findById(Long id);
+    Cuenta findById(Integer id);
     
-    int revisarTotalTransferencia(Long idBanco);
+    int revisarTotalTransferencia(Integer idBanco);
     
-    BigDecimal revisarSaldo(Long idCuenta);
+    BigDecimal revisarSaldo(Integer idCuenta);
     
-    void transferir(Long idBanco, Long idCuentaOrigen, Long idCuentaDestino, BigDecimal monto);
+    void transferir(Integer idBanco, Integer idCuentaOrigen, Integer idCuentaDestino, BigDecimal monto);
 }

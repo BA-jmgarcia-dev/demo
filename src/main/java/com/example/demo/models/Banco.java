@@ -1,26 +1,35 @@
 package com.example.demo.models;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@NoArgsConstructor
+
 @Data
+@NoArgsConstructor
+@Entity
+@Table(name ="banco")
 public class Banco {
-    
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String nombre;
-    private List<Cuenta> cuentas;
+
+    @Column(name = "total_transferencias")
     private int totalTransferencias;
 
     public Banco(Long id, String nombre, int totalTransferencias){
         this.id = id;
         this.nombre = nombre;
         this.totalTransferencias = totalTransferencias;
-        this.cuentas = new ArrayList<>();
     }
 
     public void transferencia(Cuenta origen, Cuenta destino, BigDecimal monto){
@@ -28,8 +37,4 @@ public class Banco {
         destino.credito(monto);
     }
 
-    public void addCuenta(Cuenta cuenta){
-        this.cuentas.add(cuenta);
-        cuenta.setBanco(this);
-    }
 }

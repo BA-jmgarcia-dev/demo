@@ -22,36 +22,36 @@ public class CuentaServiceImpl implements CuentaService {
 
 
     @Override
-    public Cuenta findById(Long id) {
-        return cuentaRepo.findById(id);
+    public Cuenta findById(Integer id) {
+        return cuentaRepo.findById(id).orElseThrow();
     }
 
     @Override
-    public int revisarTotalTransferencia(Long idBanco) {
-        Banco banco = bancoRepo.findById(idBanco);
+    public int revisarTotalTransferencia(Integer idBanco) {
+        Banco banco = bancoRepo.findById(idBanco).orElseThrow();
         return banco.getTotalTransferencias();
     }
 
     @Override
-    public BigDecimal revisarSaldo(Long idCuenta) {
-        Cuenta cuenta = cuentaRepo.findById(idCuenta);
+    public BigDecimal revisarSaldo(Integer idCuenta) {
+        Cuenta cuenta = cuentaRepo.findById(idCuenta).orElseThrow();
         return cuenta.getSaldo();
     }
 
     @Override
-    public void transferir(Long idBanco, Long idCuentaOrigen, Long idCuentaDestino, BigDecimal monto) {
-        Cuenta cuentaOrigen = cuentaRepo.findById(idCuentaOrigen);
+    public void transferir(Integer idBanco, Integer idCuentaOrigen, Integer idCuentaDestino, BigDecimal monto) {
+        Cuenta cuentaOrigen = cuentaRepo.findById(idCuentaOrigen).orElseThrow();
         cuentaOrigen.debito(monto);
-        cuentaRepo.update(cuentaOrigen);
+        cuentaRepo.save(cuentaOrigen);
 
-        Cuenta cuentaDestino = cuentaRepo.findById(idCuentaDestino);
+        Cuenta cuentaDestino = cuentaRepo.findById(idCuentaDestino).orElseThrow();
         cuentaDestino.credito(monto);
-        cuentaRepo.update(cuentaDestino);
+        cuentaRepo.save(cuentaDestino);
 
-        Banco banco = bancoRepo.findById(idBanco);
+        Banco banco = bancoRepo.findById(idBanco).orElseThrow();
         int totalTransferencias = banco.getTotalTransferencias();
         banco.setTotalTransferencias(++totalTransferencias);
-        bancoRepo.update(banco);
+        bancoRepo.save(banco);
     }
     
 }
