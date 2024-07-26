@@ -1,6 +1,7 @@
 package com.example.demo.services;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
 
@@ -52,6 +53,16 @@ public class CuentaServiceImpl implements CuentaService {
         int totalTransferencias = banco.getTotalTransferencias();
         banco.setTotalTransferencias(++totalTransferencias);
         bancoRepo.save(banco);
+    }
+
+
+    public Cuenta createCuenta(Cuenta cuenta) {
+        return cuentaRepo.save(cuenta);
+    }
+
+
+    public List<Cuenta> findAll() {
+        return cuentaRepo.findAll();
     }
     
 }
