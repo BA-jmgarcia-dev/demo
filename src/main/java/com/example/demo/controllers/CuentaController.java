@@ -1,6 +1,8 @@
 package com.example.demo.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -51,20 +53,12 @@ public class CuentaController {
     }
 
     @PostMapping("create-account")
-    public ResponseEntity<?> crear(@RequestBody Cuenta cuenta){
-
-        Cuenta cuentaCreada = cuentaService.createCuenta(cuenta);
-        
-        Map<String, Object> response = new HashMap<>();
-        response.put("date", LocalDate.now().toString());
-        response.put("status", "ok");
-        response.put("mensaje", "cuenta creada con exito");
-        response.put("cuenta", cuentaCreada);
-        
-        return ResponseEntity.ok(response);
+    @ResponseStatus(HttpStatus.CREATED)
+    public Cuenta crear(@RequestBody Cuenta cuenta){
+        return cuentaService.createCuenta(cuenta);
     }
 
-    @GetMapping("cuentas")
+    @GetMapping()
     @ResponseStatus(OK)
     public List<Cuenta> cuentas(){
         return cuentaService.findAll();
