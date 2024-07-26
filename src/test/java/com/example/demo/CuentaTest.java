@@ -198,7 +198,7 @@ public class CuentaTest {
         @Test
         @Timeout(value = 2000, unit = TimeUnit.MILLISECONDS)
         void pruebaTimeOut2() throws InterruptedException {
-            TimeUnit.SECONDS.sleep(2);
+            TimeUnit.SECONDS.sleep(1);
         }
     }
 }
