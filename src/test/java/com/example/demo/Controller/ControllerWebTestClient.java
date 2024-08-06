@@ -1,11 +1,13 @@
 package com.example.demo.Controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -97,6 +99,44 @@ public class ControllerWebTestClient {
                 Cuenta cuenta = response.getResponseBody();
                 assertEquals("Jose", cuenta.getPersona());
                 assertEquals("310.00", cuenta.getSaldo().toPlainString());
+            });
+    }
+
+    @Test
+    @Order(4)
+    void testListar(){
+        client.get().uri("/api/cuentas").exchange()
+        .expectStatus().isOk()
+        .expectHeader().contentType(MediaType.APPLICATION_JSON)
+        .expectBodyList(Cuenta.class)
+        .consumeWith(response -> {
+            List<Cuenta> cuentas = response.getResponseBody();
+            assertNotNull(cuentas);
+            assertEquals(2, cuentas.size());
+            assertEquals(1, cuentas.get(0).getId());
+            assertEquals("310.00", cuentas.get(1).getSaldo().toPlainString());
+        }).hasSize(2);
+    }
+
+    @Test
+    @Order(5)
+    void testGuardar(){
+        // given
+        Cuenta cuenta = new Cuenta("Ramon", new BigDecimal("500.00"));
+        
+        // when
+        client.post().uri("/api/cuentas/create-account")
+            .contentType(MediaType.APPLICATION_JSON)
+            .bodyValue(cuenta)
+            .exchange()
+        // then 
+            .expectStatus().isCreated()
+            .expectHeader().contentType(MediaType.APPLICATION_JSON)
+            .expectBody(Cuenta.class)
+            .consumeWith(response -> {
+                Cuenta cuentaCreada = response.getResponseBody();
+                assertEquals(3, cuentaCreada.getId());
+                assertEquals("500.00", cuentaCreada.getSaldo().toPlainString());
             });
     }
 }
