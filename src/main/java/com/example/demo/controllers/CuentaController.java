@@ -27,10 +27,11 @@ import com.example.demo.services.CuentaService;
 @RequestMapping("/api/cuentas")
 public class CuentaController {
     
-
-    @Autowired
     private CuentaService cuentaService;
 
+    public CuentaController(CuentaService cuentaService){
+        this.cuentaService = cuentaService;
+    }
 
     @GetMapping("/{id}")
     @ResponseStatus(OK)
